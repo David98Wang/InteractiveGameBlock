@@ -19,48 +19,33 @@ import java.util.ArrayList;
 class defaultSensorEventListener implements SensorEventListener {
 
 
-    private final static int GESTURE_LENGTH = 10;
-
-    private final static int THRESHOLD_X = 23;
-    private final static int THRESHOLD_Y = 25;
-
-    public int currentDirection;
     public static final int UP = 1;
     public static final int DOWN = 2;
     public static final int LEFT = 3;
     public static final int RIGHT = 4;
-
+    private final static int GESTURE_LENGTH = 10;
+    private final static int THRESHOLD_X = 23;
+    private final static int THRESHOLD_Y = 25;
+    public int currentDirection;
     public TextView tv;
-
-    private ArrayList<Double> curSensorValue = new ArrayList<Double>();
-
-    private ArrayList<ArrayList<Double>> historyData = new ArrayList<ArrayList<Double>>();
+    public ArrayList<Integer> xHist = new ArrayList<Integer>();
+    public ArrayList<Integer> yHist = new ArrayList<Integer>();
     //private LineGraphView lineGraphView;
-
+    public ArrayList<Integer> zHist = new ArrayList<Integer>();
+    public double avgROC;
+    public boolean newChange;
+    DecimalFormat defaultFormat = new DecimalFormat("0.00");
+    private ArrayList<Double> curSensorValue = new ArrayList<Double>();
+    private ArrayList<ArrayList<Double>> historyData = new ArrayList<ArrayList<Double>>();
     private TextView curOutputView;
     private TextView maxOutputView;
-
     private String sensorName;
-
     private int sensorType;
     private int historyDataSize;
     private int numberOfValues;
-
     private int velocityX;
     private int velocityY;
     private int velocityZ;
-
-    public ArrayList<Integer> xHist = new ArrayList<Integer>();
-    public ArrayList<Integer> yHist = new ArrayList<Integer>();
-    public ArrayList<Integer> zHist = new ArrayList<Integer>();
-
-
-    DecimalFormat defaultFormat = new DecimalFormat("0.00");
-
-
-    public double avgROC;
-
-    public boolean newChange;
 
     public defaultSensorEventListener() {
         this.historyDataSize = 0;
@@ -200,12 +185,11 @@ class defaultSensorEventListener implements SensorEventListener {
             baseLineX += xHist.get(i);
             baseLineY += yHist.get(i);
         }
-        baseLineX /= (GESTURE_LENGTH * 2.0);
-        baseLineY /= (GESTURE_LENGTH * 2.0);
+
         //Calculates the baseline velocity
         baseLineX = (xHist.get(xHist.size() - 1));
         baseLineY = (yHist.get(yHist.size() - 1));
-        //Maintian history value
+        //Maintain history value
         if (xHist.size() > 10) {
             baseLineX += xHist.get(xHist.size() - 11);
             baseLineY += yHist.get(yHist.size() - 11);
@@ -214,7 +198,6 @@ class defaultSensorEventListener implements SensorEventListener {
         }
 
         boolean left, right, up, down; //Boolean variables for direction
-
 
         if (tv == null) return;
         int avgX = 0, avgY = 0;
@@ -236,79 +219,29 @@ class defaultSensorEventListener implements SensorEventListener {
             //ret+="Left";
             tv.setText("LEFT");
             currentDirection = LEFT;
+            MainActivity.left = true;
         } else if (right) {
             tv.setText("RIGHT");
             currentDirection = RIGHT;
+            MainActivity.right = true;
         }
         if (up) {
             tv.setText("UP");
             currentDirection = UP;
+            MainActivity.up = true;
         } else if (down) {
             tv.setText("DOWN");
             currentDirection = DOWN;
+            MainActivity.down = true;
         }
-//        double minX = 1000000, maxX = -1000000, minY = 1000000, maxY = -1000000;
-//        for (int i = historyData.size() - 1; i >= 0 && i >= historyData.size() - GESTURE_LENGTH * 2; i--) {
-//            minX = Math.min(minX, historyData.get(0).get(i));
-//            maxX = Math.max(maxX, historyData.get(0).get(i));
-//            minY = Math.min(minY, historyData.get(1).get(i));
-//            maxY = Math.max(maxY, historyData.get(1).get(i));
-//        }
-//        Log.d("reset: ",String.format("%f %f",maxY-minY,maxX-minX));
-//        //Log.d("reset: ", String.format("%f %f %f %f", minX, maxX, minY, maxY));
-//        if (maxX - minX < 0.1 && velocityX != 0) {
-//            for (int i = xHist.size() - 1; i > 0 && i >= xHist.size() - GESTURE_LENGTH * 2; i--)
-//                xHist.set(i, 1);
-//            velocityX = 0;
-//            Log.d("reset", "x");
-//        }
-//        if (Math.abs(maxY - minY) < 0.1 && velocityY != 0) {
-//            for (int i = xHist.size() - 1; i > 0 && i >= xHist.size() - GESTURE_LENGTH * 2; i--)
-//                yHist.set(i, 1);
-//            velocityY = 0;
-//            Log.d("reset", "y");
-//        }
+        if (up || down || left || right) {
+            for (int i = 0; i < xHist.size(); i++) {
+                xHist.set(i, 0);
+                yHist.set(i, 0);
+            }
+        }
     }
 
-    /*private void detectDirection(){
-        if(MainActivity.LOCK)
-            return;
-        double dx,dy,dz;
-        if(debugCnt++%10==0)
-        Log.d("DEBUG",velocityX+" "+velocityY+" "+velocityZ);
-        boolean left,right,up,down,forward,backward;
-        left=(velocityX<-1*THRESHOLD_X);
-        right=(velocityX>THRESHOLD_X);
-        up=(velocityY>THRESHOLD_Y);
-        down=(velocityY<-1*THRESHOLD_Y);
-        forward=(velocityZ>THRESHOLD_Z);
-        backward=(velocityZ<-1*THRESHOLD_Z);
-        if(tv==null)return;
-        if ((up || down) &&(left||right)) {
-            if(Math.abs(velocityX)>Math.abs(velocityY))
-                up=down=false;
-            else
-                left=right=false;
-        }
-        if(left){
-            Log.i("LOG","left");
-            //ret+="Left";
-            tv.setText("Left");
-        }
-        else if(right){
-            Log.i("LOG","Right");
-            //ret+="right";
-            tv.setText("Right");
-        }
-        if(up){
-            //tv.setText("up");
-            tv.setText("up");
-        }
-        else if(down){
-            tv.setText("down");
-            //tv.setText("down");
-        }
-    }*/
     public void onAccuracyChanged(Sensor s, int i) {
     }
 }

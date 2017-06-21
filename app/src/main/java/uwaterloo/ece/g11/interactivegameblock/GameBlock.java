@@ -8,7 +8,7 @@ import android.util.AttributeSet;
  */
 
 public class GameBlock extends android.support.v7.widget.AppCompatImageView {
-    int coordX, coordY;
+    int curX,curY,destX,destY;
     public static final float blockLength = 250f;
     public static final double IMAGE_STAGE = 1.0d;
 
@@ -30,15 +30,19 @@ public class GameBlock extends android.support.v7.widget.AppCompatImageView {
         this.setImageResource(R.drawable.gameblock);
         setX(coordX * blockLength);
         setY(coordY * blockLength);
-        this.coordX = coordX;
-        this.coordY = coordY;
+        this.curX = this.destX = coordX;
+        this.curX = this.destX = coordY;
     }
 
-    public void setLocation(int x, int y) {
-        coordX = x;
-        coordY = y;
-        setX(coordX * blockLength);
-        setY(coordY * blockLength);
+    public void setLocation(int curX, int curY) {
+        this.curX = curX;
+        this.curY = curY;
+        setX(curX);
+        setY(curY);
+    }
+    public void setDestination(int destX,int destY){
+        this.destX = destX;
+        this.destY = destY;
     }
 
 }

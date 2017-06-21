@@ -66,7 +66,7 @@ public class MainActivity extends Activity {
         //Initialize Timer;
         Timer myGameLoop = new Timer();
         TimerTask myGameloopTask = new GameLoopTask(accelerometerEventListener, this, loGLobal, getApplicationContext(), ivGameBlock);
-        myGameLoop.schedule(myGameloopTask, 50, 50);
+        myGameLoop.schedule(myGameloopTask, 50, 16);
     }
 
     private void initializeGameBoard() {
