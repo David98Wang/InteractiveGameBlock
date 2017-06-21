@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LOGlobal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="uwaterloo.ece.g11.interactivegameblock.MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/loGameBoard"
+        android:layout_width="700px"
+        android:layout_height="700px">
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvCurAccelerometerData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_below="@+id/loGameBoard"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/tvDirection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_below="@+id/tvCurAccelerometerData"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/btnUP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UP"
+        android:layout_below="@+id/tvDirection"
+        android:layout_alignStart="@+id/btnDown" />
+
+    <Button
+        android:id="@+id/btnRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Right"
+        android:layout_alignBaseline="@+id/btnDown"
+        android:layout_alignBottom="@+id/btnDown"
+        android:layout_toEndOf="@+id/btnUP" />
+
+    <Button
+        android:id="@+id/btnLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Left"
+        android:layout_alignBaseline="@+id/btnDown"
+        android:layout_alignBottom="@+id/btnDown"
+        android:layout_toEndOf="@+id/tvDirection" />
+
+    <Button
+        android:id="@+id/btnDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Down"
+        android:layout_below="@+id/btnUP"
+        android:layout_toEndOf="@+id/btnLeft" />
+</RelativeLayout>
