@@ -9,25 +9,26 @@ import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.TimerTask;
 
 /**
- * Created by whcda on 6/19/2017.
+ * Created by David Wang on 6/19/2017.
  */
 
-public class GameLoopTask extends TimerTask {
+class GameLoopTask extends TimerTask {
     private static int cycleWaitDuration = 10;
     private boolean notMoving;
-    ArrayList<GameBlock> gameBlocks;
+    private ArrayList<GameBlock> gameBlocks;
     private static int blockVelocity = 25;
-    defaultSensorEventListener accelerometerListener;
-    GameBlock block;
+    private defaultSensorEventListener accelerometerListener;
+    private GameBlock block;
     private Activity activity;
     private RelativeLayout loGame;
     private Context context;
     private int cycleSinceLastMove = 0;
 
-    boolean justMoved = false;
+    private boolean justMoved = false;
 
     /**
      * Constructor for GameLoopTask. Just fill in variables by name
@@ -62,6 +63,7 @@ public class GameLoopTask extends TimerTask {
                             if (gameBlocks.get(i).curY != gameBlocks.get(i).destY || gameBlocks.get(i).curX != gameBlocks.get(i).destX)
                                 notMoving = false;
                         if (notMoving) {
+                            blockVelocity = 25;
                             cleanUp();
                             //Log.d("BLOCK NOT", String.valueOf(gameBlocks.get(1).destY));
                             for (int i = 0; i < gameBlocks.size(); i++) {
@@ -71,6 +73,7 @@ public class GameLoopTask extends TimerTask {
                             if (justMoved) {
                                 generateNewBlock();
                                 justMoved = false;
+                                return;
                             }
                             if (MainActivity.up) {
                                 setUp();
@@ -94,17 +97,19 @@ public class GameLoopTask extends TimerTask {
                                 blockCurY = (int) gameBlocks.get(i).curY;
                                 blockDestX = (int) gameBlocks.get(i).destX;
                                 blockDestY = (int) gameBlocks.get(i).destY;
+                                int velocity = Math.min(blockVelocity,Math.max(Math.abs(blockCurX-blockDestX),Math.abs(blockCurY-blockDestY)));
                                 if (i == 1)
                                     Log.d("BLOCK LOOP", String.format("%d %d %d %d", blockCurX, blockCurY, blockDestX, blockDestY));
                                 if (blockCurY < blockDestY)
-                                    gameBlocks.get(i).moveY(blockVelocity);
+                                    gameBlocks.get(i).moveY(velocity);
                                 else if (blockCurY > blockDestY)
-                                    gameBlocks.get(i).moveY(-1 * blockVelocity);
+                                    gameBlocks.get(i).moveY(-1 * velocity);
                                 else if (blockCurX < blockDestX)
-                                    gameBlocks.get(i).moveX(blockVelocity);
+                                    gameBlocks.get(i).moveX(velocity);
                                 else if (blockCurX > blockDestX)
-                                    gameBlocks.get(i).moveX(-1 * blockVelocity);
+                                    gameBlocks.get(i).moveX(-1 * velocity);
                             }
+                            blockVelocity += 10;
                         }
                         MainActivity.up = MainActivity.down = MainActivity.left = MainActivity.right = false;
                     }
@@ -263,20 +268,26 @@ public class GameLoopTask extends TimerTask {
             curY = (int) gameBlocks.get(i).curY;
             taken[curX / 250][curY / 250] = true;
         }
+        int emptyBlock = 16 - gameBlocks.size();
+        Random rand = new Random();
+        int newBlockAt = rand.nextInt(emptyBlock);
         int setX = 3, setY = 3;
         boolean found = false;
         for (int i = 3; i >= 0; i--) {
             for (int j = 3; j >= 0; j--) {
                 if (!taken[i][j]) {
+                    newBlockAt--;
+                }
+                if(newBlockAt==0 && !taken[i][j]){
                     setX = i;
                     setY = j;
-                    found = true;
-                    break;
                 }
             }
             if (found) break;
         }
         if (!found) Log.d("GAME", "LOST");
+        //TODO implement end game behavior;
+        //TODO Create abstract class if necessary;
         GameBlock gb = new GameBlock(gameBlocks.get(0).context, 2, setX * 250, setY * 250);
         gb.setZ(MainActivity.blockZ);
         MainActivity.loGameBoard.addView(gb);
