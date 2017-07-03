@@ -19,17 +19,19 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends Activity {
-    RelativeLayout loGLobal, loGameBoard;
+    public static RelativeLayout loGLobal, loGameBoard;
+
+    ArrayList<GameBlock>gameBlocks;
     GameBlock ivGameBlock;
     static final int layoutHeight = 1000, layoutWidth = 1000;
-    static final float baseX = -45f, baseY = -45f;
     public SensorEventListener accelerometerEventListener;
     public static boolean up, down, left, right;
-
+    public static int blockZ = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +56,7 @@ public class MainActivity extends Activity {
 
     private void initializeVariables() {
         loGLobal = (RelativeLayout) findViewById(R.id.LOGlobal);
-
+        gameBlocks = new ArrayList<>();
 
         //Initialize game board
         initializeGameBoard();
@@ -65,7 +67,7 @@ public class MainActivity extends Activity {
 
         //Initialize Timer;
         Timer myGameLoop = new Timer();
-        TimerTask myGameloopTask = new GameLoopTask(accelerometerEventListener, this, loGLobal, getApplicationContext(), ivGameBlock);
+        TimerTask myGameloopTask = new GameLoopTask(accelerometerEventListener, this, loGLobal, getApplicationContext(), gameBlocks);
         myGameLoop.schedule(myGameloopTask, 50, 16);
     }
 
@@ -77,13 +79,33 @@ public class MainActivity extends Activity {
     }
 
     private void initializeGameBlock() {
-        ivGameBlock = new GameBlock(this, 0,0);
-        loGameBoard.addView(ivGameBlock);
+        ivGameBlock = new GameBlock(this,2,0,0);
+        ivGameBlock.setZ(blockZ);
+        gameBlocks.add(ivGameBlock);
 
+        GameBlock ivGameBlock1 = new GameBlock(this,2,250,0);
+        ivGameBlock1.setZ(blockZ);
+        gameBlocks.add(ivGameBlock1);
 
-        ViewGroup.LayoutParams layout = ivGameBlock.getLayoutParams();
-        layout.height = 250;
-        layout.width = 250;
+        GameBlock ivGameBlock2 = new GameBlock(this,4,500,0);
+        ivGameBlock2.setZ(blockZ);
+        gameBlocks.add(ivGameBlock2);
+
+        GameBlock ivGameBlock3 = new GameBlock(this,8,750,0);
+        ivGameBlock3.setZ(blockZ);
+        gameBlocks.add(ivGameBlock3);
+
+        for(int i=0;i<gameBlocks.size();i++){
+            loGameBoard.addView(gameBlocks.get(i));
+            ViewGroup.LayoutParams layout = gameBlocks.get(i).getLayoutParams();
+            layout.width=250;
+            layout.height=250;
+            gameBlocks.get(i).setX(gameBlocks.get(i).destX);
+            gameBlocks.get(i).setY(gameBlocks.get(i).destY);
+        }
+        //ViewGroup.LayoutParams layout = ivGameBlock.getLayoutParams();
+        //layout.height = 250;
+        //layout.width = 250;
 
 //        Timer t= new Timer();
 //        TimerTask tt = new TimerTask() {
