@@ -1,6 +1,7 @@
 package uwaterloo.ece.g11.interactivegameblock;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
@@ -26,12 +27,15 @@ import java.util.TimerTask;
 public class MainActivity extends Activity {
     public static RelativeLayout loGLobal, loGameBoard;
 
+    public static Timer myGameLoop;
     ArrayList<GameBlock>gameBlocks;
     GameBlock ivGameBlock;
     static final int layoutHeight = 1000, layoutWidth = 1000;
     public SensorEventListener accelerometerEventListener;
     public static boolean up, down, left, right;
     public static int blockZ = 1;
+
+    public static AlertDialog endGameDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +43,7 @@ public class MainActivity extends Activity {
         configureAccelerometerSensor();
         initializeVariables();
 
-
+        endGameDialog = new AlertDialog.Builder(MainActivity.this).create();
         //loGLobal.setBackgroundResource(R.drawable.gameboard);
     }
 
@@ -66,8 +70,8 @@ public class MainActivity extends Activity {
         addEventListener();
 
         //Initialize Timer;
-        Timer myGameLoop = new Timer();
-        TimerTask myGameloopTask = new GameLoopTask(accelerometerEventListener, this, loGLobal, getApplicationContext(), gameBlocks);
+        myGameLoop = new Timer();
+        TimerTask myGameloopTask = new GameLoopTask(accelerometerEventListener, MainActivity.this, loGLobal, getApplicationContext(), gameBlocks);
         myGameLoop.schedule(myGameloopTask, 50, 16);
     }
 
@@ -149,5 +153,8 @@ public class MainActivity extends Activity {
                 right = true;
             }
         });
+    }
+    public static void displayDialog(){
+
     }
 }

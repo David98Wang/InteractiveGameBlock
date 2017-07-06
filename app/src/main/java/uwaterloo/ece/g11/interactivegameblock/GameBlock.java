@@ -7,6 +7,9 @@ import android.view.Gravity;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by whcda on 6/19/2017.
  */
@@ -20,11 +23,12 @@ public class GameBlock extends RelativeLayout {
    public  Color color;
     Context context;
     public boolean merged = false;
-    float curX, curY, destX, destY;
+    int curX, curY, destX, destY;
     public static final float blockLength = 250f;
     public static final double IMAGE_STAGE = 1.0d;
-
-    public GameBlock(Context context, int value, float coordX, float coordY) {
+    Timer t;
+    TimerTask tt;
+    public GameBlock(Context context, final int value, int coordX, int coordY) {
         super(context);
         this.context = context;
         this.setBackgroundResource(R.drawable.gameblock);
@@ -44,6 +48,15 @@ public class GameBlock extends RelativeLayout {
         tvValue.setText(String.valueOf(value));
         tvValue.setX(0);
         tvValue.setY(0);
+
+        t = new Timer();
+        tt = new TimerTask() {
+            @Override
+            public void run() {
+
+            }
+        };
+        t.schedule(tt,0,10);
     }
 
     public GameBlock(Context context) {
@@ -68,7 +81,7 @@ public class GameBlock extends RelativeLayout {
         this.curX = this.destX = coordY;
     }
 
-    public void setLocation(float curX, float curY) {
+    public void setLocation(int  curX, int curY) {
         this.curX = curX;
         this.curY = curY;
         setX(curX);
