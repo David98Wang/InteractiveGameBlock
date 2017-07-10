@@ -14,7 +14,7 @@ import java.util.TimerTask;
  * Created by whcda on 6/19/2017.
  */
 
-public class GameBlock extends RelativeLayout {
+public class GameBlock extends GameBlockTemplate {
     public static final int CELL_COLOR[] = {Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.CYAN, Color.GRAY};
 
 
