@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,7 +36,6 @@ public class MainActivity extends Activity {
     public SensorEventListener accelerometerEventListener;
     public static boolean up, down, left, right;
     public static int blockZ = 1;
-
     public static AlertDialog endGameDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

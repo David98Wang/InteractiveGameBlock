@@ -61,7 +61,7 @@ class GameLoopTask extends TimerTask {
 
     @Override
     public void run() {
-        if(ended)
+        if (ended)
             MainActivity.myGameLoop.cancel();
 
         activity.runOnUiThread(
@@ -369,7 +369,7 @@ class GameLoopTask extends TimerTask {
     private void cleanUp() {
         for (int i = 0; i < gameBlocks.size(); i++) {
             gameBlocks.get(i).merged = false;
-            if (Math.abs(gameBlocks.get(i).getZ() - 0.0)<=0.0001) {
+            if (Math.abs(gameBlocks.get(i).getZ() - 0.0) <= 0.0001) {
                 ((ViewGroup) gameBlocks.get(i).getParent()).removeView(gameBlocks.get(i));
                 gameBlocks.remove(i--);
             }
@@ -377,88 +377,95 @@ class GameLoopTask extends TimerTask {
     }
 
     private void generateNewBlock() {
-        //TODO: Finish endgame behavior
         boolean taken[][] = new boolean[4][4];
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
                 taken[i][j] = false;
         for (int i = 0; i < gameBlocks.size(); i++) {
             int destX, destY;
-            destX =  gameBlocks.get(i).destX;
-            destY =  gameBlocks.get(i).destY;
+            destX = gameBlocks.get(i).destX;
+            destY = gameBlocks.get(i).destY;
             taken[destX / 250][destY / 250] = true;
         }
         int emptyBlock = 16 - gameBlocks.size();
         int newBlockAt = -1;
         Random rand = new Random();
-        if(emptyBlock != 0){
+        if (emptyBlock != 0) {
             newBlockAt = rand.nextInt(emptyBlock);
         }
-
-        Log.d("newBlock",String.valueOf(newBlockAt));
         int setX = 3, setY = 3;
         boolean found = false;
-        for (int i = 3; i >= 0; i--) {
-            for (int j = 3; j >= 0; j--) {
 
+        int num = rand.nextInt(8);
+        int newNum = 2;
+        if (num == 0) newNum = 4;
+        for (int i = 3; i >= 0; i--) {
+            for (int j = 3; j >= 0; j--) {;
                 if (newBlockAt == 0 && !taken[i][j]) {
-                    Log.d("newBlock",String.format("%d %d %d",i,j,emptyBlock));
                     setX = i;
                     setY = j;
-                    newBlockAt --;
-                }else if (!taken[i][j]) {
+                    newBlockAt--;
+                } else if (!taken[i][j]) {
                     newBlockAt--;
                 }
                 if (!taken[i][j]) found = true;
             }
-
         }
-        if (!found) {
+        boolean lost = true;
+        int value[][] = new int[4][4];
+        for (int i = 0; i < 4; i++) for (int j = 0; j < 4; j++) value[i][j] = 0;
+        value[setX][setY]=newNum;
+        for (int i = 0; i < gameBlocks.size(); i++) {
+            value[gameBlocks.get(i).destX / 250][gameBlocks.get(i).destY / 250] = gameBlocks.get(i).value;
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (value[i][j] == 0) continue;
+                if (i - 1 >= 0 && value[i][j] == value[i - 1][j])
+                    lost = false;
+                if (i + 1 < 4 && value[i][j] == value[i + 1][j])
+                    lost = false;
+                if (j - 1 >= 0 && value[i][j] == value[i][j - 1])
+                    lost = false;
+                if (j + 1 < 4 && value[i][j] == value[i][j + 1])
+                    lost = false;
+            }
+        }
+        Log.d("lost", String.valueOf(lost));
+        if (emptyBlock == 1) found = false;
+        if (lost && !found) {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     MainActivity.endGameDialog.setTitle("Game Ended");
-                    MainActivity.endGameDialog.setMessage("You Lost. Restart?");
-                    MainActivity.endGameDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    MainActivity.endGameDialog.setMessage("You Lost.");
+                    MainActivity.endGameDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
-                    MainActivity.endGameDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Restart", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            restartGame();
-                            dialog.dismiss();
-                        }
-                    });
+
                     MainActivity.endGameDialog.show();
-                    ended  = true;
+                    ended = true;
                 }
             });
 
         }
         boolean win = false;
         for (int i = 0; i < gameBlocks.size(); i++) {
-            if(gameBlocks.get(i).value == 256)
+            if (gameBlocks.get(i).value == 256)
                 win = true;
         }
-        if(win){
+        if (win) {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     MainActivity.endGameDialog.setTitle("Game Ended");
-                    MainActivity.endGameDialog.setMessage("You Won. Restart?");
-                    MainActivity.endGameDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    MainActivity.endGameDialog.setMessage("You Won");
+                    MainActivity.endGameDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    MainActivity.endGameDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Restart", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            restartGame();
                             dialog.dismiss();
                         }
                     });
@@ -467,10 +474,7 @@ class GameLoopTask extends TimerTask {
                 }
             });
         }
-        int num = rand.nextInt(8);
-        int newNum = 2;
-        if (num == 0) newNum = 4;
-        //TODO implement end game behavior;
+        
         //TODO Create abstract class if necessary;
         GameBlock gb = new GameBlock(gameBlocks.get(0).context, newNum, setX * 250, setY * 250);
         gb.setZ(MainActivity.blockZ);
